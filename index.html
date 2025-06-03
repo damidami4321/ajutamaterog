@@ -1,130 +1,281 @@
-
 <!DOCTYPE html>
-<html lang="ro">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>❤️ Pentru Marinela ❤️</title>
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Troll Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&display=swap" rel="stylesheet">
   <style>
     body {
-      background: linear-gradient(to right, #ffe6f0, #ffccf2);
-      font-family: 'Pacifico', cursive;
-      text-align: center;
-      padding: 2rem;
-      color: #99004d;
+      margin: 0;
+      font-family: 'Gloria Hallelujah', cursive;
+      background: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+      color: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
     }
-    .question-box {
-      background: white;
-      border-radius: 2rem;
-      padding: 2rem;
-      box-shadow: 0 0 20px rgba(255, 0, 128, 0.2);
-      margin: 2rem auto;
+
+    .quiz-container {
       max-width: 600px;
+      width: 100%;
+      border: 5px dashed black;
+      padding: 20px;
+      background: #fffde8;
+      position: relative;
+      box-shadow: 10px 10px 0 black;
+      animation: fadeIn 1s ease-in;
     }
-    button {
-      background-color: #ff66b3;
-      color: white;
-      border: none;
-      padding: 1rem 2rem;
-      border-radius: 1rem;
-      font-size: 1.2rem;
-      margin: 0.5rem;
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .question {
+      font-size: 1.5em;
+      margin-bottom: 20px;
+      text-align: center;
+      animation: popIn 0.5s ease-in;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .answers {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .answer-button {
+      border: 3px dotted black;
+      background-color: #f5f1e6;
+      color: black;
+      padding: 10px;
       cursor: pointer;
+      font-size: 1.2em;
+      transition: transform 0.3s, background-color 0.3s;
+      animation: bounceIn 0.6s ease-out;
     }
-    button:hover {
-      background-color: #e60073;
+
+    .answer-button:hover {
+      transform: scale(1.05);
+      background-color: #e1e1e1;
     }
-    .hidden {
-      display: none;
+
+    @keyframes bounceIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      60% { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(1); }
     }
-    audio {
-      position: absolute;
+
+    .hearts {
+      position: fixed;
       bottom: 10px;
       left: 10px;
+      font-size: 2em;
+      animation: fadeIn 2s ease-in;
     }
-    input {
-      padding: 0.5rem;
-      border-radius: 0.5rem;
-      border: 1px solid #ff66b3;
-      font-size: 1rem;
+
+    .heart {
+      color: red;
+      margin-right: 5px;
+      transition: transform 0.3s;
+    }
+
+    .heart.break {
+      animation: shake 0.5s ease;
+    }
+
+    @keyframes shake {
+      0% { transform: rotate(0); }
+      25% { transform: rotate(-10deg); }
+      50% { transform: rotate(10deg); }
+      75% { transform: rotate(-10deg); }
+      100% { transform: rotate(0); }
+    }
+
+    .death-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 2em;
+      z-index: 1000;
+      display: none;
+      animation: fadeIn 1s ease-in;
+    }
+
+    .restart-button {
+      background: red;
+      color: white;
+      font-size: 1em;
+      padding: 10px 20px;
+      border: 2px solid black;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .restart-button:hover {
+      background-color: darkred;
+    }
+
+    .loading-bar {
+      height: 20px;
+      width: 100%;
+      border: 2px solid black;
+      margin: 10px 0;
+      position: relative;
+      overflow: hidden;
+      background: #f5f1e6;
+    }
+
+    .loading-inner {
+      background: blue;
+      height: 100%;
+      width: 30%;
+      position: absolute;
+      animation: loadLoop 2s infinite alternate;
+    }
+
+    @keyframes loadLoop {
+      0% { left: 0; }
+      100% { left: 70%; }
+    }
+
+    @media (max-width: 600px) {
+      .answer-button {
+        font-size: 1em;
+      }
     }
   </style>
 </head>
 <body>
-
-  <h1>💘 Pentru Marinela 💘</h1>
-  <p>Răspunde sincer... 😘</p>
-
-  <!-- Prima întrebare -->
-  <div class="question-box" id="q1">
-    <p>Ai prieten? 💬</p>
-    <button onclick="goNext(true)">Da, dar tu ești mai important 😍</button>
-    <button onclick="goNext(false)">Nu 😇</button>
+  <div class="hearts" id="hearts">
+    <span class="heart">❤️</span>
+    <span class="heart">❤️</span>
+    <span class="heart">❤️</span>
   </div>
 
-  <!-- Bucla cu "Vrei să fii cu mine?" -->
-  <div class="question-box hidden" id="loop-question">
-    <p>Vrei să fii cu mine? 💞</p>
-    <button onclick="answerYes()">Da 😚</button>
-    <button onclick="answerNo()">Nu 😢</button>
+  <div class="quiz-container" id="quiz">
+    <div class="question" id="question">Loading question...</div>
+    <div class="answers" id="answers"></div>
   </div>
 
-  <!-- După ce acceptă -->
-  <div class="question-box hidden" id="perfect-boy">
-    <p>Cine e băiatul perfect? 🥰<br>
-    <small style="font-size: 0.9rem; color: #cc0066;">Hint: începe cu D... 😉</small></p>
-    <input type="text" id="boyInput" placeholder="Scrie aici..." />
-    <br><br>
-    <button onclick="checkBoy()">Trimite</button>
-    <p id="errorMsg" style="color: red; display: none;">Hmm... încearcă din nou 😅</p>
+  <div class="death-screen" id="deathScreen">
+    <div>💀 YOU DIED! 💀</div>
+    <button class="restart-button" onclick="restartQuiz()">Restart</button>
   </div>
 
-  <!-- Răspuns corect -->
-  <div class="question-box hidden" id="show-contact">
-    <p>Bravo! Ai dreptate! Damian e perfect 😎<br>
-    📞 Numărul meu este: <strong>060833794</strong></p>
-  </div>
-
-  <!-- Muzica -->
-  <audio autoplay loop>
-    <source src="melodie_romantica.mp3" type="audio/mpeg" />
-    Browserul tău nu suportă redarea audio.
-  </audio>
+  <audio id="wrongSound" src="https://www.soundjay.com/button/sounds/button-10.mp3" preload="auto"></audio>
+  <audio id="rightSound" src="https://www.soundjay.com/button/sounds/button-3.mp3" preload="auto"></audio>
 
   <script>
-    let noCount = 0;
+    const questions = [/* same questions array as before */];
 
-    function goNext(hasBoyfriend) {
-      document.getElementById('q1').classList.add('hidden');
-      document.getElementById('loop-question').classList.remove('hidden');
+    let current = 0;
+    let hearts = 3;
+    const questionEl = document.getElementById("question");
+    const answersEl = document.getElementById("answers");
+    const heartsEl = document.getElementById("hearts");
+    const deathScreen = document.getElementById("deathScreen");
+    const wrongSound = document.getElementById("wrongSound");
+    const rightSound = document.getElementById("rightSound");
+
+    function loadQuestion() {
+      const q = questions[current];
+      answersEl.innerHTML = "";
+
+      if (q.loading) {
+        questionEl.textContent = q.q;
+        const loader = document.createElement("div");
+        loader.className = "loading-bar";
+        loader.innerHTML = '<div class="loading-inner"></div>';
+        answersEl.appendChild(loader);
+        return;
+      }
+
+      questionEl.textContent = q.q;
+
+      q.answers.forEach((ans, i) => {
+        const btn = document.createElement("button");
+        btn.className = "answer-button";
+
+        if (typeof ans === "string") {
+          btn.textContent = ans;
+        } else {
+          btn.textContent = ans.text;
+          btn.style.backgroundColor = ans.color;
+        }
+
+        if (q.bigButtons) {
+          btn.style.fontSize = "3em";
+          btn.style.padding = "30px";
+        }
+
+        if (q.dodging) {
+          btn.addEventListener("mousemove", () => {
+            btn.style.position = "relative";
+            btn.style.left = `${Math.random() * 60 - 30}px`;
+            btn.style.top = `${Math.random() * 20 - 10}px`;
+          });
+        }
+
+        btn.onclick = () => checkAnswer(i);
+        answersEl.appendChild(btn);
+      });
     }
 
-    function answerYes() {
-      noCount = 0;
-      document.getElementById('loop-question').classList.add('hidden');
-      document.getElementById('perfect-boy').classList.remove('hidden');
-    }
-
-    function answerNo() {
-      noCount++;
-      if (noCount >= 10) {
-        answerYes();
+    function checkAnswer(i) {
+      const q = questions[current];
+      if (i === q.correct) {
+        rightSound.play();
+        current++;
+        if (current >= questions.length) {
+          alert("You beat the troll quiz! 🎉");
+          restartQuiz();
+        } else {
+          loadQuestion();
+        }
       } else {
-        alert(`Ai răspuns NU de ${noCount} ori. Gândește-te mai bine 😅`);
+        wrongSound.play();
+        hearts -= hearts === 3 ? 2 : 1;
+        updateHearts();
+        if (hearts <= 0) showDeathScreen();
       }
     }
 
-    function checkBoy() {
-      const input = document.getElementById('boyInput').value.trim().toLowerCase();
-      if (input.includes('damian') || input.includes('tu')) {
-        document.getElementById('perfect-boy').classList.add('hidden');
-        document.getElementById('show-contact').classList.remove('hidden');
-      } else {
-        document.getElementById('errorMsg').style.display = 'block';
-      }
+    function updateHearts() {
+      const all = ["❤️", "❤️", "❤️"];
+      for (let i = 3; i > hearts; i--) all[i - 1] = "🤍";
+      heartsEl.innerHTML = all.map((h, i) => `<span class='heart${hearts === i ? " break" : ""}'>${h}</span>`).join("");
     }
+
+    function showDeathScreen() {
+      deathScreen.style.display = "flex";
+    }
+
+    function restartQuiz() {
+      current = 0;
+      hearts = 3;
+      updateHearts();
+      deathScreen.style.display = "none";
+      loadQuestion();
+    }
+
+    loadQuestion();
   </script>
-
 </body>
 </html>
